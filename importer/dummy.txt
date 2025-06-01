@@ -1,0 +1,18 @@
+print(f"Total documents extracted: {len(alldocs)}")
+
+# Splitting the docs into manageable chunks, textsplitter still return document objects, but with smaller page content and optional overlap in text content
+
+print("Splitting documents into chunks:")
+text_splitter = RecursiveCharacterTextSplitter(chunk_size = 1000, chunk_overlap = 200)
+chunks = text_splitter.split_documents(alldocs)
+
+# Storing in vector database
+
+print("Now storing in postgres with vector extension created")
+
+embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+#PGVector.from_documents: Return VectorStore initialized from documents and embeddings.
+
+PGVector.from_documents(documents=chunks, embedding=embedding,collection_name="rag_chunks",pre_delete_collection=True,)
+
+print("Documents processed and stored successfully!")
